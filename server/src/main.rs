@@ -1,14 +1,17 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpServer, web};
-use server::init::{AppState, Config, koneksi, routes::routes};
+use anyhow::Ok;
+use server::{dbinit, init::{AppState, Config, koneksi, routes::routes}};
 use tracing_subscriber::FmtSubscriber;
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> anyhow::Result<()> {
   dotenvy::dotenv().ok();
   let config = Config::env();
   let state = AppState { koneksi: koneksi(&config.database_url).await };
 
+  dbinit::migrate(&config.database_url, &state.koneksi).await?;
+  
   let subscriber = FmtSubscriber::new();
   tracing::subscriber::set_global_default(subscriber).expect("Tracing Subscriber error");
 
@@ -25,5 +28,6 @@ async fn main() -> std::io::Result<()> {
       .configure(routes)
   })
   .bind((config.server_host, config.server_port))?
-  .run().await
+  .run().await?;
+  Ok(())
 }

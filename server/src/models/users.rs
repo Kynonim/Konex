@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 use uuid::Uuid;
 
@@ -13,4 +13,17 @@ pub struct User {
   pub is_verified: bool,
   pub created_at: DateTime<Utc>,
   pub updated_at: DateTime<Utc>,
+}
+
+#[derive(Debug, Deserialize, FromRow)]
+pub struct SignupRequest {
+  pub name: String,
+  pub email: String,
+  pub password: String
+}
+
+#[derive(Debug, Deserialize, FromRow)]
+pub struct SigninRequest {
+  pub email: String,
+  pub password: String
 }

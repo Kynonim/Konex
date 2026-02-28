@@ -1,3 +1,5 @@
+pub mod hash;
+
 use std::env;
 use sqlx::{PgPool, postgres::PgPoolOptions};
 
